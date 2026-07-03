@@ -1,0 +1,11 @@
+
+fastapi
+uvicorn
+streamlit
+groq
+networkx
+pydantic
+pyngrok
+supabase
+qdrant-client
+python-dotenv
