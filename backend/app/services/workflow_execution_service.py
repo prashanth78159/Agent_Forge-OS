@@ -1,6 +1,11 @@
 
 from app.config.database import db
 
+from app.services.current_user_service import (
+    CurrentUserService
+)
+
+
 class WorkflowExecutionService:
 
     @staticmethod
@@ -12,12 +17,23 @@ class WorkflowExecutionService:
 
         return (
             db.client
-            .table("workflow_executions")
+            .table(
+                "workflow_executions"
+            )
             .insert(
                 {
-                    "id": execution_id,
-                    "workflow_id": workflow_id,
-                    "status": status
+                    "id":
+                        execution_id,
+
+                    "workflow_id":
+                        workflow_id,
+
+                    "status":
+                        status,
+
+                    "user_id":
+                        CurrentUserService
+                        .get_user_id()
                 }
             )
             .execute()
@@ -32,7 +48,9 @@ class WorkflowExecutionService:
 
         return (
             db.client
-            .table("workflow_node_outputs")
+            .table(
+                "workflow_node_outputs"
+            )
             .insert(
                 {
                     "workflow_execution_id":
@@ -44,6 +62,27 @@ class WorkflowExecutionService:
                     "output_data":
                         str(output)
                 }
+            )
+            .execute()
+        )
+
+    @staticmethod
+    def get_executions():
+
+        return (
+            db.client
+            .table(
+                "workflow_executions"
+            )
+            .select("*")
+            .eq(
+                "user_id",
+                CurrentUserService
+                .get_user_id()
+            )
+            .order(
+                "created_at",
+                desc=True
             )
             .execute()
         )

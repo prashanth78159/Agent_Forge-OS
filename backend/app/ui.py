@@ -1,14 +1,35 @@
 
 import streamlit as st
 
+from app.ui_pages.auth_page import render as auth_page
+
 from app.ui_pages.dashboard import render as dashboard_page
+from app.ui_pages.platform_dashboard import (
+    render as platform_dashboard_page
+)
+from app.ui_pages.error_dashboard import (
+    render as error_dashboard_page
+)
+from app.ui_pages.audit_dashboard import (
+    render as audit_dashboard_page
+)
 
 from app.ui_pages.agent_catalog import render as agent_catalog_page
 from app.ui_pages.agent_runner import render as agent_runner_page
 
+from app.ui_pages.workflow_monitor import (
+    render as workflow_monitor_page
+)
+from app.ui_pages.workflow_compare import (
+    render as workflow_compare_page
+)
 from app.ui_pages.workflow_builder import render as workflow_builder_page
 from app.ui_pages.workflow_visualizer import render as workflow_visualizer_page
 from app.ui_pages.workflow_library import render as workflow_library_page
+from app.ui_pages.workspaces import (
+    render as workspaces_page
+)
+
 
 from app.ui_pages.workflow_marketplace import render as workflow_marketplace_page
 from app.ui_pages.workflow_import import render as workflow_import_page
@@ -17,7 +38,19 @@ from app.ui_pages.save_template import render as save_template_page
 from app.ui_pages.workflow_executor import render as workflow_executor_page
 from app.ui_pages.workflow_execution_history import render as workflow_execution_history_page
 from app.ui_pages.workflow_replay import render as workflow_replay_page
+from app.ui_pages.workflow_versions import (
+    render as workflow_versions_page
+)
+
 from app.ui_pages.workflow_generator import render as workflow_generator_page
+from app.ui_pages.workflow_analytics import render as workflow_analytics_page
+from app.ui_pages.dag_visualizer import render as dag_visualizer_page
+
+from app.ui_pages.approval_center import render as approval_center_page
+from app.ui_pages.workflow_scheduler import render as workflow_scheduler_page
+from app.ui_pages.scheduler_control import (
+    render as scheduler_control_page
+)
 
 from app.ui_pages.execution_center import render as execution_center_page
 from app.ui_pages.execution_history import render as execution_history_page
@@ -27,6 +60,10 @@ from app.ui_pages.log_viewer import render as log_viewer_page
 from app.ui_pages.memory import render as memory_page
 from app.ui_pages.metrics import render as metrics_page
 
+from app.ui_pages.notification_center import (
+    render as notification_center_page
+)
+
 from app.ui_pages.profile import render as profile_page
 from app.ui_pages.api_vault import render as api_vault_page
 from app.ui_pages.settings import render as settings_page
@@ -34,56 +71,64 @@ from app.ui_pages.contact import render as contact_page
 
 from app.ui_pages.database_dashboard import render as database_dashboard_page
 
+
 st.set_page_config(
     page_title="AgentForge OS",
     page_icon="🚀",
     layout="wide"
 )
 
-# ==========================================
-# LOGIN
-# ==========================================
+# ======================================
+# AUTHENTICATION
+# ======================================
 
 if "logged_in" not in st.session_state:
+
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
 
-    st.title("🚀 AgentForge OS")
-
-    username = st.text_input(
-        "Username"
-    )
-
-    password = st.text_input(
-        "Password",
-        type="password"
-    )
-
-    if st.button(
-        "Login"
-    ):
-
-        if (
-            username == "admin"
-            and
-            password == "admin"
-        ):
-
-            st.session_state.logged_in = True
-            st.rerun()
-
-        else:
-
-            st.error(
-                "Invalid credentials"
-            )
+    auth_page()
 
     st.stop()
 
-# ==========================================
-# SIDEBAR
-# ==========================================
+# ======================================
+# USER INFO
+# ======================================
+
+user = st.session_state.get(
+    "user"
+)
+
+if user:
+
+    try:
+
+        st.sidebar.success(
+            f"👤 {user.email}"
+        )
+
+    except Exception:
+
+        st.sidebar.success(
+            "👤 Logged In"
+        )
+
+# ======================================
+# LOGOUT
+# ======================================
+
+if st.sidebar.button(
+    "🚪 Logout"
+):
+
+    st.session_state.clear()
+
+    st.rerun()
+
+# ======================================
+# SIDEBAR NAVIGATION
+# ======================================
 
 menu = st.sidebar.radio(
 
@@ -92,13 +137,20 @@ menu = st.sidebar.radio(
     [
 
         "Dashboard",
+        "Platform Dashboard",
+        "Error Dashboard",
+        "Audit Dashboard",
 
         "Agent Catalog",
         "Agent Runner",
 
+        "Workflow Monitor",
+        "Workflow Compare",
         "Workflow Builder",
         "Workflow Visualizer",
         "Workflow Library",
+        "Workspaces",
+        
 
         "Workflow Marketplace",
         "Workflow Import",
@@ -107,6 +159,14 @@ menu = st.sidebar.radio(
         "Workflow Executor",
         "Workflow Execution History",
         "Workflow Replay",
+        "Workflow Versions",
+
+        "Workflow Analytics",
+        "DAG Visualizer",
+
+        "Approval Center",
+        "Workflow Scheduler",
+        "Scheduler Control",
 
         "AI Workflow Generator",
 
@@ -119,6 +179,7 @@ menu = st.sidebar.radio(
         "Metrics",
 
         "Database Dashboard",
+        "Notification Center",
 
         "Profile",
         "API Vault",
@@ -136,9 +197,9 @@ stored_workflows = st.session_state.get(
     {}
 )
 
-# ==========================================
+# ======================================
 # ROUTER
-# ==========================================
+# ======================================
 
 if menu == "Dashboard":
 
@@ -146,6 +207,15 @@ if menu == "Dashboard":
         orchestrator,
         stored_workflows
     )
+elif menu == "Platform Dashboard":
+
+    platform_dashboard_page()
+elif menu == "Error Dashboard":
+
+    error_dashboard_page()
+elif menu == "Audit Dashboard":
+
+    audit_dashboard_page()
 
 elif menu == "Agent Catalog":
 
@@ -157,6 +227,13 @@ elif menu == "Agent Runner":
         orchestrator
     )
 
+elif menu == "Workflow Monitor":
+
+    workflow_monitor_page()
+
+elif menu == "Workflow Compare":
+
+    workflow_compare_page()
 elif menu == "Workflow Builder":
 
     workflow_builder_page()
@@ -170,6 +247,10 @@ elif menu == "Workflow Visualizer":
 elif menu == "Workflow Library":
 
     workflow_library_page()
+
+elif menu == "Workspaces":
+
+    workspaces_page()
 
 elif menu == "Workflow Marketplace":
 
@@ -194,6 +275,30 @@ elif menu == "Workflow Execution History":
 elif menu == "Workflow Replay":
 
     workflow_replay_page()
+
+elif menu == "Workflow Versions":
+
+    workflow_versions_page()
+
+elif menu == "Workflow Analytics":
+
+    workflow_analytics_page()
+
+elif menu == "DAG Visualizer":
+
+    dag_visualizer_page()
+
+elif menu == "Approval Center":
+
+    approval_center_page()
+
+elif menu == "Workflow Scheduler":
+
+    workflow_scheduler_page()
+
+elif menu == "Scheduler Control":
+
+    scheduler_control_page()
 
 elif menu == "AI Workflow Generator":
 
@@ -230,6 +335,10 @@ elif menu == "Metrics":
 elif menu == "Database Dashboard":
 
     database_dashboard_page()
+
+elif menu == "Notification Center":
+
+    notification_center_page()
 
 elif menu == "Profile":
 

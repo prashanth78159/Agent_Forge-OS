@@ -1,64 +1,61 @@
 
 import streamlit as st
 
-from app.services.settings_service import (
-    SettingsService
+from app.services.api_vault_service import (
+    APIVaultService
 )
+
 
 def render():
 
-    st.title("🔑 API Vault")
+    st.title(
+        "🔑 API Vault"
+    )
 
-    providers = [
+    provider = st.selectbox(
 
-        ("Groq API Key", "groq_api_key"),
-        ("OpenAI API Key", "openai_api_key"),
-        ("Anthropic API Key", "anthropic_api_key"),
-        ("Gemini API Key", "gemini_api_key"),
-        ("DeepSeek API Key", "deepseek_api_key"),
-        ("OpenRouter API Key", "openrouter_api_key")
+        "Provider",
 
-    ]
+        [
 
-    values = {}
+            "OpenAI",
+            "Groq",
+            "Gemini",
+            "Anthropic",
+            "OpenRouter"
 
-    for label, key in providers:
+        ]
+    )
 
-        values[key] = st.text_input(
-            label,
-            value=SettingsService.get_setting(key) or "",
-            type="password"
+    api_key = st.text_input(
+        "API Key",
+        type="password"
+    )
+
+    if st.button(
+        "Save Key"
+    ):
+
+        APIVaultService.save_key(
+            provider,
+            api_key
         )
-
-    if st.button("💾 Save API Keys"):
-
-        for _, key in providers:
-
-            SettingsService.save_setting(
-                key,
-                values[key].strip()
-            )
 
         st.success(
-            "✅ API Keys Saved Successfully"
+            "Key Saved"
         )
 
-    st.divider()
+    st.subheader(
+        "Stored Providers"
+    )
 
-    st.subheader("Saved Providers")
+    keys = (
+        APIVaultService
+        .get_keys()
+    )
 
-    for label, key in providers:
+    for row in keys:
 
-        saved = SettingsService.get_setting(key)
-
-        if saved:
-
-            st.success(
-                f"{label}: Configured"
-            )
-
-        else:
-
-            st.warning(
-                f"{label}: Not Configured"
-            )
+        st.info(
+            row["provider"]
+        )

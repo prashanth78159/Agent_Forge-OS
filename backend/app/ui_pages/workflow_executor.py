@@ -81,7 +81,8 @@ def render():
         )
 
         workflow = next(
-            w for w in workflows
+            w
+            for w in workflows
             if w["name"] == workflow_name
         )
 
@@ -97,21 +98,55 @@ def render():
 
         progress.progress(50)
 
-        result = engine.run_workflow(
-            workflow,
-            task
-        )
+        try:
 
-        progress.progress(100)
+            result = engine.run_workflow(
+                workflow,
+                task
+            )
 
-        st.success(
-            result["execution_id"]
-        )
+            progress.progress(100)
 
-        st.subheader(
-            "Final Output"
-        )
+            if (
+                isinstance(result, dict)
+                and
+                result.get("status")
+                ==
+                "WAITING_APPROVAL"
+            ):
 
-        st.write(
-            result["final"]
-        )
+                st.warning(
+                    "Workflow paused and is waiting for approval."
+                )
+
+                st.write(
+                    f"Execution ID: {result['execution_id']}"
+                )
+
+            else:
+
+                st.success(
+                    result["execution_id"]
+                )
+
+                st.subheader(
+                    "Final Output"
+                )
+
+                st.write(
+                    result["final"]
+                )
+
+        except Exception as e:
+
+            if str(e) == "WAITING_APPROVAL":
+
+                st.warning(
+                    "Workflow paused and is waiting for approval."
+                )
+
+            else:
+
+                st.error(
+                    str(e)
+                )

@@ -1,34 +1,12 @@
 
-from app.core.agents.agent_orchestrator import AgentOrchestrator
-
 class NodeExecutor:
 
-    def __init__(
-        self,
-        provider,
-        api_key,
-        model
+    @staticmethod
+    def get_retry_count(
+        node
     ):
 
-        self.agent = AgentOrchestrator(
-            provider,
-            api_key,
-            model
+        return node.get(
+            "retries",
+            3
         )
-
-    async def execute(
-        self,
-        node,
-        context
-    ):
-
-        prompt = node.config.get(
-            "prompt",
-            ""
-        )
-
-        result = self.agent.run(
-            prompt
-        )
-
-        return result
