@@ -22,6 +22,59 @@ class WorkflowService:
         workflow_json
     ):
 
+        existing = (
+            db.client
+            .table(
+                "workflows"
+            )
+            .select("*")
+            .eq(
+                "name",
+                name
+            )
+            .execute()
+        )
+
+        if existing.data:
+
+            workflow = existing.data[0]
+
+            db.client.table(
+                "workflows"
+            ).update(
+                {
+                    "workflow_json":
+                        workflow_json
+                }
+            ).eq(
+                "id",
+                workflow["id"]
+            ).execute()
+
+            WorkflowVersionService.auto_create_version(
+
+                str(
+                    workflow["id"]
+                ),
+
+                workflow_json
+
+            )
+
+            AuditService.log_event(
+
+                str(
+                    workflow["id"]
+                ),
+
+                "UPDATE",
+
+                f"Workflow {name} updated"
+
+            )
+
+            return workflow
+
         result = (
             db.client
             .table(
@@ -52,6 +105,7 @@ class WorkflowService:
                 workflow_json
 
         )
+
         AuditService.log_event(
 
             str(workflow["id"]),

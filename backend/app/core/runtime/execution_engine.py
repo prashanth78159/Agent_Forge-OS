@@ -23,11 +23,12 @@ from app.services.error_service import (
     ErrorService
 )
 
-from app.core.runtime.dag_executor import (
-    DAGExecutor
-)
 from app.services.execution_state_service import (
     ExecutionStateService
+)
+
+from app.core.runtime.dag_executor import (
+    DAGExecutor
 )
 
 
@@ -82,8 +83,11 @@ class ExecutionEngine:
             )
 
             return {
-                "execution_id": execution_id,
-                "status": "WAITING_APPROVAL"
+                "status":
+                    "WAITING_APPROVAL",
+
+                "execution_id":
+                    execution_id
             }
 
         base_prompt = node.get(
@@ -147,7 +151,6 @@ class ExecutionEngine:
 
         }
 
-
     def run_workflow(
         self,
         workflow,
@@ -159,14 +162,18 @@ class ExecutionEngine:
         )
 
         WorkflowExecutionService.save_execution(
+
             execution_id,
+
             str(
                 workflow.get(
                     "id",
                     "workflow"
                 )
             ),
+
             "RUNNING"
+
         )
 
         from app.services.audit_service import (
@@ -259,58 +266,29 @@ class ExecutionEngine:
 
                     node["prompt"] = task
 
-                retry_count = node.get(
-                    "retries",
-                    3
-                )
+                try:
 
-                last_error = None
+                    result = self.execute_node(
 
-                for attempt in range(
-                    retry_count + 1
-                ):
+                        execution_id,
 
-                    try:
+                        node,
 
-                        result = self.execute_node(
-                            execution_id,
-                            node,
-                            context
-                        )
+                        context
 
-                        last_error = None
+                    )
 
-                        break
+                except Exception as e:
 
-                  
+                    WorkflowStatusService.set_node_status(
 
-                    except Exception as e:
+                        execution_id,
 
-                        if str(e) == "WAITING_APPROVAL":
+                        node_id,
 
-                            raise e
+                        "FAILED"
 
-                        last_error = e
-
-                        WorkflowStatusService.set_node_status(
-                            execution_id,
-                            node_id,
-                            "FAILED"
-                        )
-
-                if last_error:
-
-                    if str(last_error) == "WAITING_APPROVAL":
-
-                        return {
-
-                            "execution_id":
-                                execution_id,
-
-                            "status":
-                                "WAITING_APPROVAL"
-
-                        }
+                    )
 
                     ErrorService.log_error(
 
@@ -318,11 +296,19 @@ class ExecutionEngine:
 
                         node_id,
 
-                        str(last_error)
+                        str(e)
 
                     )
 
-                    raise last_error
+                    raise
+
+                if (
+                    result.get("status")
+                    ==
+                    "WAITING_APPROVAL"
+                ):
+
+                    return result
 
                 outputs[node_id] = (
                     result["output"]
@@ -345,7 +331,9 @@ class ExecutionEngine:
                 )
 
                 WorkflowStatusService.update_progress(
+
                     execution_id,
+
                     int(
                         (
                             len(completed)
@@ -353,6 +341,7 @@ class ExecutionEngine:
                             total_nodes
                         ) * 100
                     )
+
                 )
 
                 progress_made = True
@@ -360,7 +349,9 @@ class ExecutionEngine:
             if not progress_made:
 
                 raise Exception(
+
                     "Workflow contains circular dependencies."
+
                 )
 
         WorkflowMetricsService.save_metrics(

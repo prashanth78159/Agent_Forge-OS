@@ -10,3 +10,5 @@ supabase
 qdrant-client
 python-dotenv
 anthropic
+graphviz
+pandas

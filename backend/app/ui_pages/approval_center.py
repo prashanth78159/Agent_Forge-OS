@@ -9,6 +9,10 @@ from app.services.execution_state_service import (
     ExecutionStateService
 )
 
+from app.services.workflow_resume_service import (
+    WorkflowResumeService
+)
+
 
 def render():
 
@@ -35,15 +39,9 @@ def render():
             f"{row['node_id']} | {row['status']}"
         ):
 
-            st.write(
-                row
-            )
+            st.write(row)
 
-            if (
-                row["status"]
-                ==
-                "PENDING"
-            ):
+            if row["status"] == "PENDING":
 
                 if st.button(
                     f"Approve-{row['id']}"
@@ -63,8 +61,14 @@ def render():
 
                     )
 
+                    WorkflowResumeService.mark_resumed(
+
+                        row["execution_id"]
+
+                    )
+
                     st.success(
-                        "Approved"
+                        "Workflow Approved"
                     )
 
                     st.rerun()

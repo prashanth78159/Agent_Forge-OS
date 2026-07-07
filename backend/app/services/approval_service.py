@@ -27,6 +27,31 @@ class ApprovalService:
         node_id
     ):
 
+        existing = (
+            db.client
+            .table(
+                "workflow_approvals"
+            )
+            .select("*")
+            .eq(
+                "execution_id",
+                execution_id
+            )
+            .eq(
+                "node_id",
+                node_id
+            )
+            .eq(
+                "status",
+                "PENDING"
+            )
+            .execute()
+        )
+
+        if existing.data:
+
+            return existing
+
         result = (
             db.client
             .table(
