@@ -63,6 +63,9 @@ from app.ui_pages.metrics import render as metrics_page
 from app.ui_pages.notification_center import (
     render as notification_center_page
 )
+from app.ui_pages.resume_debug import (
+    render as resume_debug_page
+)
 
 from app.ui_pages.profile import render as profile_page
 from app.ui_pages.api_vault import render as api_vault_page
@@ -150,7 +153,7 @@ menu = st.sidebar.radio(
         "Workflow Visualizer",
         "Workflow Library",
         "Workspaces",
-        
+
 
         "Workflow Marketplace",
         "Workflow Import",
@@ -180,6 +183,7 @@ menu = st.sidebar.radio(
 
         "Database Dashboard",
         "Notification Center",
+        "Resume Debug",
 
         "Profile",
         "API Vault",
@@ -339,6 +343,12 @@ elif menu == "Database Dashboard":
 elif menu == "Notification Center":
 
     notification_center_page()
+
+
+elif menu == "Resume Debug":
+
+    resume_debug_page()
+
 
 elif menu == "Profile":
 

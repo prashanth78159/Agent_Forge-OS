@@ -1,11 +1,11 @@
 
 Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
 
-2026-07-06 11:58:35.057 Uvicorn server started on 0.0.0.0:8501
+2026-07-07 09:20:54.035 Uvicorn server started on :::8501
 
   You can now view your Streamlit app in your browser.
 
   Local URL: http://localhost:8501
   Network URL: http://172.28.0.12:8501
-  External URL: http://34.26.122.195:8501
+  External URL: http://34.187.4.174:8501
 

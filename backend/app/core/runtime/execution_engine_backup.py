@@ -27,10 +27,6 @@ from app.services.execution_state_service import (
     ExecutionStateService
 )
 
-from app.services.execution_snapshot_service import (
-    ExecutionSnapshotService
-)
-
 from app.core.runtime.dag_executor import (
     DAGExecutor
 )
@@ -87,13 +83,11 @@ class ExecutionEngine:
             )
 
             return {
-
                 "status":
                     "WAITING_APPROVAL",
 
                 "execution_id":
                     execution_id
-
             }
 
         base_prompt = node.get(
@@ -314,18 +308,6 @@ class ExecutionEngine:
                     "WAITING_APPROVAL"
                 ):
 
-                    ExecutionSnapshotService.save_snapshot(
-
-                        execution_id,
-
-                        workflow_json,
-
-                        outputs,
-
-                        list(completed)
-
-                    )
-
                     return result
 
                 outputs[node_id] = (
@@ -367,7 +349,9 @@ class ExecutionEngine:
             if not progress_made:
 
                 raise Exception(
+
                     "Workflow contains circular dependencies."
+
                 )
 
         WorkflowMetricsService.save_metrics(

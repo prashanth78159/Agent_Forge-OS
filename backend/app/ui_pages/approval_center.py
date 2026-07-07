@@ -13,6 +13,10 @@ from app.services.workflow_resume_service import (
     WorkflowResumeService
 )
 
+from app.services.resume_execution_service import (
+    ResumeExecutionService
+)
+
 
 def render():
 
@@ -36,19 +40,27 @@ def render():
     for row in requests:
 
         with st.expander(
+
             f"{row['node_id']} | {row['status']}"
+
         ):
 
-            st.write(row)
+            st.write(
+                row
+            )
 
             if row["status"] == "PENDING":
 
                 if st.button(
+
                     f"Approve-{row['id']}"
+
                 ):
 
                     ApprovalService.approve(
+
                         row["id"]
+
                     )
 
                     ExecutionStateService.save_state(
@@ -67,8 +79,42 @@ def render():
 
                     )
 
+                    ResumeExecutionService.resume_execution(
+
+                        row["execution_id"]
+
+                    )
+
                     st.success(
-                        "Workflow Approved"
+                        "Workflow Approved And Resumed"
+                    )
+
+                    st.rerun()
+
+                if st.button(
+
+                    f"Reject-{row['id']}"
+
+                ):
+
+                    ApprovalService.reject(
+
+                        row["id"]
+
+                    )
+
+                    ExecutionStateService.save_state(
+
+                        row["execution_id"],
+
+                        row["node_id"],
+
+                        "REJECTED"
+
+                    )
+
+                    st.warning(
+                        "Workflow Rejected"
                     )
 
                     st.rerun()
