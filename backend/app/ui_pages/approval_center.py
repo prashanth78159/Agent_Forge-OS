@@ -1,4 +1,5 @@
 
+
 import streamlit as st
 
 from app.services.approval_service import (
@@ -17,6 +18,7 @@ from app.services.resume_execution_service import (
     ResumeExecutionService
 )
 
+from app.config.database import db
 
 def render():
 
@@ -45,8 +47,33 @@ def render():
 
         ):
 
-            st.write(
-                row
+            st.write({
+                "Execution ID":
+                    row["execution_id"],
+
+                "Node":
+                    row["node_id"],
+
+                "Status":
+                    row["status"],
+
+                "Level":
+                    row.get(
+                        "approval_level"
+                    ),
+
+                "Group":
+                    row.get(
+                        "approver_group"
+                    )
+            })
+
+            comment = st.text_area(
+
+                "Approval Comment",
+
+                key=f"comment_{row['id']}"
+
             )
 
             if row["status"] == "PENDING":
@@ -57,39 +84,69 @@ def render():
 
                 ):
 
-                    ApprovalService.approve(
+                    try:
 
-                        row["id"]
+                        if hasattr(
+                            ApprovalService,
+                            "add_comment"
+                        ):
 
-                    )
+                            ApprovalService.add_comment(
 
-                    ExecutionStateService.save_state(
+                                row["id"],
 
-                        row["execution_id"],
+                                comment
 
-                        row["node_id"],
+                            )
 
-                        "APPROVED"
+                        ApprovalService.approve(
 
-                    )
+                            row["id"]
 
-                    WorkflowResumeService.mark_resumed(
+                        )
 
-                        row["execution_id"]
+                        ExecutionStateService.save_state(
 
-                    )
+                            row["execution_id"],
 
-                    ResumeExecutionService.resume_execution(
+                            row["node_id"],
 
-                        row["execution_id"]
+                            "APPROVED"
 
-                    )
+                        )
 
-                    st.success(
-                        "Workflow Approved And Resumed"
-                    )
+                        WorkflowResumeService.mark_resumed(
 
-                    st.rerun()
+                            row["execution_id"]
+
+                        )
+
+                        result = (
+
+                            ResumeExecutionService
+                            .resume_execution(
+
+                                row["execution_id"]
+
+                            )
+
+                        )
+
+                        st.success(
+                            "✅ Workflow Approved And Resumed"
+                        )
+
+                        st.json(
+                            result
+                        )
+
+                        st.rerun()
+
+                    except Exception as e:
+
+                        st.error(
+                            str(e)
+                        )
 
                 if st.button(
 
@@ -97,24 +154,63 @@ def render():
 
                 ):
 
-                    ApprovalService.reject(
+                    try:
 
+                        if hasattr(
+                            ApprovalService,
+                            "add_comment"
+                        ):
+
+                            ApprovalService.add_comment(
+
+                                row["id"],
+
+                                comment
+
+                            )
+
+                        ApprovalService.reject(
+
+                            row["id"]
+
+                        )
+
+                        ExecutionStateService.save_state(
+
+                            row["execution_id"],
+
+                            row["node_id"],
+
+                            "REJECTED"
+
+                        )
+
+                        st.warning(
+                            "❌ Workflow Rejected"
+                        )
+
+                        st.rerun()
+
+                    except Exception as e:
+
+                        st.error(
+                            str(e)
+                        )
+
+                if st.button(
+                    f"Escalate-{row['id']}"
+                ):
+                    db.client.table(
+                        "workflow_approvals"
+                    ).update(
+                        {
+                            "escalated":
+                                True
+                        }
+                    ).eq(
+                        "id",
                         row["id"]
-
+                    ).execute()
+                    st.success(
+                        "Approval Escalated"
                     )
-
-                    ExecutionStateService.save_state(
-
-                        row["execution_id"],
-
-                        row["node_id"],
-
-                        "REJECTED"
-
-                    )
-
-                    st.warning(
-                        "Workflow Rejected"
-                    )
-
-                    st.rerun()

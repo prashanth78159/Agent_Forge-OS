@@ -27,7 +27,7 @@ class WorkflowService:
             .table(
                 "workflows"
             )
-            .select("*")
+            .select("*", count="exact")
             .eq(
                 "name",
                 name
@@ -35,7 +35,7 @@ class WorkflowService:
             .execute()
         )
 
-        if existing.data:
+        if existing.count > 0:
 
             workflow = existing.data[0]
 
@@ -73,7 +73,17 @@ class WorkflowService:
 
             )
 
-            return workflow
+            # Retrieve the updated workflow to return it
+            updated_workflow = (
+                db.client
+                .table("workflows")
+                .select("*")
+                .eq("id", workflow["id"])
+                .single()
+                .execute()
+            )
+
+            return updated_workflow.data
 
         result = (
             db.client
@@ -116,7 +126,7 @@ class WorkflowService:
 
         )
 
-        return result
+        return result.data[0]
 
     @staticmethod
     def get_workflows():
@@ -131,7 +141,7 @@ class WorkflowService:
             .table(
                 "workflows"
             )
-            .select("*")
+            .select("*", count="exact")
             .execute()
         )
 

@@ -5,6 +5,12 @@ from app.services.notification_service import (
     NotificationService
 )
 
+from datetime import (
+    datetime,
+    timedelta,
+    timezone
+)
+
 
 class ApprovalService:
 
@@ -24,7 +30,9 @@ class ApprovalService:
     @staticmethod
     def create_request(
         execution_id,
-        node_id
+        node_id,
+        approval_level=1,
+        approver_group="Manager"
     ):
 
         existing = (
@@ -52,6 +60,16 @@ class ApprovalService:
 
             return existing
 
+        due_at = (
+            datetime.now(
+                timezone.utc
+            )
+            +
+            timedelta(
+                hours=24
+            )
+        )
+
         result = (
             db.client
             .table(
@@ -66,7 +84,16 @@ class ApprovalService:
                         node_id,
 
                     "status":
-                        "PENDING"
+                        "PENDING",
+
+                    "approval_level":
+                        approval_level,
+
+                    "approver_group":
+                        approver_group,
+
+                    "due_at":
+                        due_at.isoformat()
                 }
             )
             .execute()
@@ -113,7 +140,59 @@ class ApprovalService:
             .update(
                 {
                     "status":
-                        "APPROVED"
+                        "APPROVED",
+
+                    "approved_at":
+                        datetime.now(
+                            timezone.utc
+                        ).isoformat()
+                }
+            )
+            .eq(
+                "id",
+                approval_id
+            )
+            .execute()
+        )
+
+    @staticmethod
+    def reject(
+        approval_id
+    ):
+
+        return (
+            db.client
+            .table(
+                "workflow_approvals"
+            )
+            .update(
+                {
+                    "status":
+                        "REJECTED"
+                }
+            )
+            .eq(
+                "id",
+                approval_id
+            )
+            .execute()
+        )
+
+    @staticmethod
+    def add_comment(
+        approval_id,
+        comment
+    ):
+
+        return (
+            db.client
+            .table(
+                "workflow_approvals"
+            )
+            .update(
+                {
+                    "approval_comments":
+                        comment
                 }
             )
             .eq(

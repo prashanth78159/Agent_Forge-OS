@@ -46,6 +46,16 @@ from app.ui_pages.workflow_generator import render as workflow_generator_page
 from app.ui_pages.workflow_analytics import render as workflow_analytics_page
 from app.ui_pages.dag_visualizer import render as dag_visualizer_page
 
+from app.ui_pages.approval_analytics import (
+    render as approval_analytics_page
+)
+
+from app.ui_pages.approval_escalation_dashboard import (
+    render as approval_escalation_dashboard_page
+)
+
+
+
 from app.ui_pages.approval_center import render as approval_center_page
 from app.ui_pages.workflow_scheduler import render as workflow_scheduler_page
 from app.ui_pages.scheduler_control import (
@@ -65,6 +75,10 @@ from app.ui_pages.notification_center import (
 )
 from app.ui_pages.resume_debug import (
     render as resume_debug_page
+)
+
+from app.ui_pages.system_health_dashboard import (
+    render as system_health_dashboard_page
 )
 
 from app.ui_pages.profile import render as profile_page
@@ -167,6 +181,9 @@ menu = st.sidebar.radio(
         "Workflow Analytics",
         "DAG Visualizer",
 
+        "Approval Intelligence",
+        "Approval Escalation Dashboard",
+
         "Approval Center",
         "Workflow Scheduler",
         "Scheduler Control",
@@ -184,6 +201,8 @@ menu = st.sidebar.radio(
         "Database Dashboard",
         "Notification Center",
         "Resume Debug",
+
+        "System Health Dashboard",
 
         "Profile",
         "API Vault",
@@ -292,6 +311,14 @@ elif menu == "DAG Visualizer":
 
     dag_visualizer_page()
 
+elif menu == "Approval Intelligence":
+
+    approval_analytics_page()
+
+elif menu == "Approval Escalation Dashboard":
+
+    approval_escalation_dashboard_page()
+
 elif menu == "Approval Center":
 
     approval_center_page()
@@ -349,6 +376,9 @@ elif menu == "Resume Debug":
 
     resume_debug_page()
 
+elif menu == "System Health Dashboard":
+
+    system_health_dashboard_page()
 
 elif menu == "Profile":
 

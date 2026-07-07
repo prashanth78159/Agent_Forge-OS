@@ -25,10 +25,14 @@ def render():
         value="""
 agent demo {
 
-step1: llm("Explain AI")
-step2: tool("print","done")
+manager_approval: approval("level=1, group=\"Manager\"")
+director_approval: approval("level=2, group=\"Director\"")
+finance_approval: approval("level=3, group=\"Finance\"")
+writer: llm("Write a report")
 
-step1 -> step2
+manager_approval -> director_approval
+director_approval -> finance_approval
+finance_approval -> writer
 
 }
 """
