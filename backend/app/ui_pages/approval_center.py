@@ -18,6 +18,10 @@ from app.services.resume_execution_service import (
     ResumeExecutionService
 )
 
+from app.services.approval_routing_service import (
+    ApprovalRoutingService
+)
+
 from app.config.database import db
 
 def render():
@@ -26,10 +30,31 @@ def render():
         "✅ Approval Center"
     )
 
+    group_filter = st.selectbox(
+        "Approver Group",
+        [
+            "ALL",
+            "Manager",
+            "Director",
+            "Finance"
+        ]
+    )
+
     requests = (
         ApprovalService
         .get_requests()
     )
+
+    if group_filter != "ALL":
+        requests = [
+            r
+            for r in requests
+            if r.get(
+                "approver_group"
+            )
+            ==
+            group_filter
+        ]
 
     if not requests:
 
@@ -106,39 +131,32 @@ def render():
                         )
 
                         ExecutionStateService.save_state(
-
                             row["execution_id"],
-
                             row["node_id"],
-
                             "APPROVED"
-
                         )
 
-                        WorkflowResumeService.mark_resumed(
-
-                            row["execution_id"]
-
+                        next_level_info = ApprovalRoutingService.process_next_level(
+                            row
                         )
 
-                        result = (
-
-                            ResumeExecutionService
-                            .resume_execution(
-
+                        if next_level_info["final_level"]:
+                            WorkflowResumeService.mark_resumed(
                                 row["execution_id"]
-
                             )
-
-                        )
-
-                        st.success(
-                            "✅ Workflow Approved And Resumed"
-                        )
-
-                        st.json(
-                            result
-                        )
+                            result = ResumeExecutionService.resume_execution(
+                                row["execution_id"]
+                            )
+                            st.success(
+                                "✅ Workflow Approved And Resumed"
+                            )
+                            st.json(
+                                result
+                            )
+                        else:
+                            st.success(
+                                f"✅ Approval for Level {row.get('approval_level', 1)} approved. Request sent for next level ({next_level_info['next_level']})."
+                            )
 
                         st.rerun()
 

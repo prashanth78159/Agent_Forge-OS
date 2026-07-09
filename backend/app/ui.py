@@ -77,8 +77,8 @@ from app.ui_pages.resume_debug import (
     render as resume_debug_page
 )
 
-from app.ui_pages.system_health_dashboard import (
-    render as system_health_dashboard_page
+from app.ui_pages.system_health import (
+    render as system_health_page
 )
 
 from app.ui_pages.profile import render as profile_page
@@ -87,7 +87,6 @@ from app.ui_pages.settings import render as settings_page
 from app.ui_pages.contact import render as contact_page
 
 from app.ui_pages.database_dashboard import render as database_dashboard_page
-
 
 st.set_page_config(
     page_title="AgentForge OS",
@@ -143,73 +142,80 @@ if st.sidebar.button(
 
     st.rerun()
 
+# Initialize current_page in session_state if not already set
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = "Dashboard" # Default page
+
+# Define all navigation options grouped by their expander
+NAVIGATION_OPTIONS = {
+    "📊 Dashboards": [
+        "Dashboard", "Platform Dashboard", "Error Dashboard", "Audit Dashboard", "System Health"
+    ],
+    "⚙️ Workflow Management": [
+        "Workflow Monitor", "Workflow Builder", "Workflow Visualizer", "Workflow Library",
+        "Workspaces", "Workflow Marketplace", "Workflow Import", "Save Template",
+        "Workflow Executor", "Workflow Execution History", "Workflow Replay",
+        "Workflow Versions", "Workflow Analytics", "DAG Visualizer", "AI Workflow Generator"
+    ],
+    "✅ Approvals & Scheduling": [
+        "Approval Center", "Approval Intelligence", "Approval Escalation Dashboard",
+        "Workflow Scheduler", "Scheduler Control"
+    ],
+    "🤖 Agent & Execution": [
+        "Agent Catalog", "Agent Runner", "Execution Center", "Execution History",
+        "Execution Search", "Log Viewer"
+    ],
+    "🗄️ Data & Monitoring": [
+        "Memory", "Metrics", "Database Dashboard"
+    ],
+    "🛠️ Developer Tools": [
+        "Resume Debug", "Notification Center"
+    ],
+    "👤 User & System": [
+        "Profile", "API Vault", "Settings", "Contact"
+    ]
+}
+
+# Function to update the current_page in session_state
+def set_page_from_sidebar_radio(group_key):
+    st.session_state.current_page = st.session_state[group_key]
+
 # ======================================
 # SIDEBAR NAVIGATION
 # ======================================
 
-menu = st.sidebar.radio(
+with st.sidebar:
+    st.markdown("## Navigation")
 
-    "Navigation",
+    for group_name, pages in NAVIGATION_OPTIONS.items():
+        # Clean group name for key generation (remove emojis and spaces)
+        clean_group_name = "".join(char for char in group_name if char.isalnum())
+        radio_key = f"radio_{clean_group_name}"
 
-    [
-
-        "Dashboard",
-        "Platform Dashboard",
-        "Error Dashboard",
-        "Audit Dashboard",
-
-        "Agent Catalog",
-        "Agent Runner",
-
-        "Workflow Monitor",
-        "Workflow Compare",
-        "Workflow Builder",
-        "Workflow Visualizer",
-        "Workflow Library",
-        "Workspaces",
+        # Determine if this expander should be expanded by default
+        # It should be expanded if the current_page belongs to this group
+        # is_expanded = st.session_state.current_page in pages
+        # Fix: expanded should be true for all parent categories if a subitem in that category is selected
+        is_expanded = any(st.session_state.current_page == page for page in pages) if 'current_page' in st.session_state else False
 
 
-        "Workflow Marketplace",
-        "Workflow Import",
-        "Save Template",
+        # Determine the initial selected index for the radio button in this group
+        try:
+            current_selection_index = pages.index(st.session_state.current_page)
+        except ValueError:
+            current_selection_index = 0 # Default to the first item if the current_page is not in this group
 
-        "Workflow Executor",
-        "Workflow Execution History",
-        "Workflow Replay",
-        "Workflow Versions",
+        with st.expander(group_name, expanded=is_expanded):
+            # Display the radio button for this group
+            st.radio(
+                "Select a page",
+                options=pages,
+                index=current_selection_index,
+                key=radio_key,
+                on_change=set_page_from_sidebar_radio,
+                args=(radio_key,)
+            )
 
-        "Workflow Analytics",
-        "DAG Visualizer",
-
-        "Approval Intelligence",
-        "Approval Escalation Dashboard",
-
-        "Approval Center",
-        "Workflow Scheduler",
-        "Scheduler Control",
-
-        "AI Workflow Generator",
-
-        "Execution Center",
-        "Execution History",
-        "Execution Search",
-        "Log Viewer",
-
-        "Memory",
-        "Metrics",
-
-        "Database Dashboard",
-        "Notification Center",
-        "Resume Debug",
-
-        "System Health Dashboard",
-
-        "Profile",
-        "API Vault",
-        "Settings",
-        "Contact"
-    ]
-)
 
 orchestrator = st.session_state.get(
     "orchestrator"
@@ -219,6 +225,9 @@ stored_workflows = st.session_state.get(
     "stored_workflows",
     {}
 )
+
+# The menu variable now reflects the selected page from session state
+menu = st.session_state.current_page
 
 # ======================================
 # ROUTER
@@ -239,6 +248,10 @@ elif menu == "Error Dashboard":
 elif menu == "Audit Dashboard":
 
     audit_dashboard_page()
+
+elif menu == "System Health":
+
+    system_health_page()
 
 elif menu == "Agent Catalog":
 
@@ -278,7 +291,6 @@ elif menu == "Workspaces":
 elif menu == "Workflow Marketplace":
 
     workflow_marketplace_page()
-
 elif menu == "Workflow Import":
 
     workflow_import_page()
@@ -376,9 +388,6 @@ elif menu == "Resume Debug":
 
     resume_debug_page()
 
-elif menu == "System Health Dashboard":
-
-    system_health_dashboard_page()
 
 elif menu == "Profile":
 
