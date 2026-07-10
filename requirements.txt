@@ -1,8 +1,9 @@
-
 fastapi
 uvicorn
 streamlit
 groq
+openai
+gemini
 networkx
 pydantic
 pyngrok
