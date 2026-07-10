@@ -28,3 +28,6 @@ jobs:
       run: |
         export PYTHONPATH=$GITHUB_WORKSPACE/backend
         pytest
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
