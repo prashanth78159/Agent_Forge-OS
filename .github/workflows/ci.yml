@@ -24,6 +24,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest
+        pip install openai # Explicitly install openai
+    - name: Debug Environment Variables
+      run: |
+        echo "SUPABASE_URL is set (masked): ${SUPABASE_URL:0:4}********${SUPABASE_URL:(-4)}"
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
     - name: Set PYTHONPATH and run tests
       run: |
         export PYTHONPATH=$GITHUB_WORKSPACE/backend
