@@ -4,13 +4,23 @@ import streamlit as st
 from app.services.api_vault_service import (
     APIVaultService
 )
+from app.services.current_user_service import (
+    CurrentUserService
+)
 
 
 def render():
 
     st.title(
-        "🔑 API Vault"
+        "🔓 API Vault"
     )
+
+    # Display current user info
+    current_user = CurrentUserService.get_user()
+    if current_user:
+        st.info(f"Currently logged in as: {current_user.get('email', 'N/A')}")
+    else:
+        st.warning("No user logged in. API Keys are user-specific.")
 
     provider = st.selectbox(
 
@@ -54,8 +64,10 @@ def render():
         .get_keys()
     )
 
-    for row in keys:
-
-        st.info(
-            row["provider"]
-        )
+    if keys:
+        for row in keys:
+            st.info(
+                row["provider"]
+            )
+    else:
+        st.info("No API keys stored for this user.")

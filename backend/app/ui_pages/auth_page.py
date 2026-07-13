@@ -9,7 +9,7 @@ from app.services.auth_service import (
 def render():
 
     st.title(
-        "🔐 Authentication"
+        "🔒 Authentication"
     )
 
     login_tab, signup_tab = st.tabs(
@@ -38,7 +38,8 @@ def render():
 
             try:
 
-                result = (
+                # Call the refactored AuthService.sign_in
+                user = (
                     AuthService
                     .sign_in(
                         email,
@@ -46,14 +47,11 @@ def render():
                     )
                 )
 
-                # st.write("LOGIN RESULT:")
-                # st.write(result)
-
-                if result.user:
+                if user: # Check if a user object was returned
 
                     st.session_state[
                         "user"
-                    ] = result.user
+                    ] = user # Store the user object
 
                     st.session_state[
                         "logged_in"
@@ -64,14 +62,10 @@ def render():
                     )
                     st.rerun()
 
-                    # st.write(
-                    #     result.user
-                    # )
-
                 else:
 
                     st.error(
-                        "No user returned"
+                        "Authentication failed. Please check your credentials."
                     )
 
             except Exception as e:
@@ -79,7 +73,6 @@ def render():
                 st.error(
                     str(e)
                 )
-                # st.write(result)
 
     with signup_tab:
 
@@ -100,6 +93,7 @@ def render():
 
             try:
 
+                # Assuming AuthService.sign_up exists and handles user creation
                 AuthService.sign_up(
                     email,
                     password

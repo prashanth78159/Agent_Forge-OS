@@ -33,7 +33,31 @@ def render():
         "✅ Approval Center"
     )
 
-    # Get current user's roles
+    # Simulate login for testing purposes in the sidebar
+    with st.sidebar:
+        st.subheader(
+            "Login Simulation"
+        )
+        user_options = {
+            "admin@example.com": {"id": "admin_id", "email": "admin@example.com", "roles": ["admin", "manager", "director", "finance"]},
+            "manager@example.com": {"id": "manager_id", "email": "manager@example.com", "roles": ["manager"]},
+            "director@example.com": {"id": "director_id", "email": "director@example.com", "roles": ["director"]},
+            "finance@example.com": {"id": "finance_id", "email": "finance@example.com", "roles": ["finance"]}
+        }
+        selected_email = st.selectbox(
+            "Select User",
+            list(user_options.keys())
+        )
+        st.session_state["user"] = user_options[selected_email] # Set the user in session_state
+
+    current_user = AuthService.get_current_user()
+    if current_user:
+        st.info(
+            f"Logged in as {current_user['email']} (Roles: {', '.join(current_user['roles'])})"
+        )
+    else:
+        st.warning("No user logged in.")
+
     current_user_roles = AuthService.get_user_roles()
 
     group_options = [
@@ -47,7 +71,6 @@ def render():
     if "admin" not in current_user_roles:
         # If not an admin, only show groups they are part of
         allowed_groups = [g for g in group_options if g == "ALL" or g.lower() in current_user_roles]
-        # Ensure 'ALL' is always an option if the user has any relevant role
         if not allowed_groups: # If no roles, no options, exit gracefully
             st.warning("You do not have any roles assigned to view approval groups.")
             return

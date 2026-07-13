@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 
@@ -22,4 +21,4 @@ class CurrentUserService:
         if not user:
             return None
 
-        return user.id
+        return user['id']
