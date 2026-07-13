@@ -1,93 +1,19 @@
 
-from app.config.database import db
-
-from app.services.current_user_service import (
-    CurrentUserService
-)
-
+import streamlit as st
+from typing import List
 
 class RBACService:
+    @staticmethod
+    def has_role(required_role: str) -> bool:
+        user_roles = st.session_state.get("user", {}).get("roles", [])
+        return required_role in user_roles
 
     @staticmethod
-    def get_role(
-        workspace_id
-    ):
-
-        user_id = (
-            CurrentUserService
-            .get_user_id()
-        )
-
-        result = (
-            db.client
-            .table(
-                "workspace_members"
-            )
-            .select("*")
-            .eq(
-                "workspace_id",
-                workspace_id
-            )
-            .eq(
-                "user_id",
-                user_id
-            )
-            .execute()
-        )
-
-        if not result.data:
-
-            return None
-
-        return result.data[0]["role"]
+    def has_any_role(required_roles: List[str]) -> bool:
+        user_roles = st.session_state.get("user", {}).get("roles", [])
+        return any(role in user_roles for role in required_roles)
 
     @staticmethod
-    def can_edit(
-        workspace_id
-    ):
-
-        role = (
-            RBACService.get_role(
-                workspace_id
-            )
-        )
-
-        return role in [
-            "OWNER",
-            "ADMIN",
-            "EDITOR"
-        ]
-
-    @staticmethod
-    def can_manage_members(
-        workspace_id
-    ):
-
-        role = (
-            RBACService.get_role(
-                workspace_id
-            )
-        )
-
-        return role in [
-            "OWNER",
-            "ADMIN"
-        ]
-
-    @staticmethod
-    def can_view(
-        workspace_id
-    ):
-
-        role = (
-            RBACService.get_role(
-                workspace_id
-            )
-        )
-
-        return role in [
-            "OWNER",
-            "ADMIN",
-            "EDITOR",
-            "VIEWER"
-        ]
+    def has_all_roles(required_roles: List[str]) -> bool:
+        user_roles = st.session_state.get("user", {}).get("roles", [])
+        return all(role in user_roles for role in required_roles)
