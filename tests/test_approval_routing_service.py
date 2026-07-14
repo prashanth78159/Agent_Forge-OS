@@ -1,6 +1,7 @@
 
 import pytest
 from unittest.mock import MagicMock
+import sys
 
 # Mock BaseDataService for RLS compliance
 class MockBaseDataService:
@@ -14,11 +15,11 @@ class MockApprovalService:
 
 @pytest.fixture(autouse=True)
 def setup_mocks(monkeypatch):
-    # Patching at the module where it's used is more reliable
-    monkeypatch.setattr('app.services.approval_routing_service.BaseDataService', MockBaseDataService)
-    monkeypatch.setattr('app.services.approval_routing_service.ApprovalService', MockApprovalService)
-    from app.services.approval_routing_service import ApprovalRoutingService
-    return ApprovalRoutingService
+    # Ensure the target module is imported before patching its attributes
+    import app.services.approval_routing_service as target_module
+    monkeypatch.setattr(target_module, 'BaseDataService', MockBaseDataService)
+    monkeypatch.setattr(target_module, 'ApprovalService', MockApprovalService)
+    return target_module.ApprovalRoutingService
 
 def test_process_next_level_routing(setup_mocks):
     ApprovalRoutingService = setup_mocks
