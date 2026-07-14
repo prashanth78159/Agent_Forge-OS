@@ -85,6 +85,9 @@ from app.ui_pages.contact import render as contact_page
 
 from app.ui_pages.database_dashboard import render as database_dashboard_page
 from app.ui_pages.test_current_user_service import render as test_current_user_service_page
+from app.ui_pages.user_management import render as user_management_page
+from app.ui_pages.approval_audit_dashboard import render as approval_audit_dashboard_page
+from app.ui_pages.role_management import render as role_management_page
 
 st.set_page_config(
     page_title="AgentForge OS",
@@ -129,7 +132,7 @@ NAVIGATION_OPTIONS = {
         "Workflow Compare"
     ],
     "✅ Approvals & Scheduling": [
-        "Approval Center", "Approval Intelligence", "Approval Escalation Dashboard",
+        "Approval Center", "Approval Intelligence", "Approval Escalation Dashboard", "Approval Audit Dashboard",
         "Workflow Scheduler", "Scheduler Control"
     ],
     "🤖 Agent & Execution": [
@@ -143,6 +146,7 @@ NAVIGATION_OPTIONS = {
         "Resume Debug", "Notification Center"
     ],
     "User & System": [
+        "User Management", "Role Management",
         "Profile", "API Vault", "Settings", "Contact"
     ],
     "Test Services": [
@@ -224,6 +228,9 @@ elif menu == "DAG Visualizer":
 elif menu == "Approval Intelligence":
     approval_analytics_page()
 elif menu == "Approval Escalation Dashboard":
+    st.info("Page under construction")
+elif menu == "Approval Audit Dashboard":
+    approval_audit_dashboard_page()
     approval_escalation_dashboard_page()
 elif menu == "Approval Center":
     approval_center_page()
@@ -257,6 +264,14 @@ elif menu == "API Vault":
     api_vault_page()
 elif menu == "Settings":
     settings_page()
+elif menu == "User Management":
+    user_management_page()
+elif menu == "Role Management":
+    role_management_page()
+elif menu == "Approval Escalation Dashboard":
+    approval_escalation_dashboard_page()
+elif menu == "Approval Audit Dashboard":
+    approval_audit_dashboard_page()
 elif menu == "Contact":
     contact_page()
 elif menu == "Test Current User Service":

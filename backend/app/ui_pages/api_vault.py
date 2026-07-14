@@ -4,9 +4,7 @@ import streamlit as st
 from app.services.api_vault_service import (
     APIVaultService
 )
-from app.services.current_user_service import (
-    BaseDataService
-)
+from app.services.base_data_service import BaseDataService
 
 
 def render():

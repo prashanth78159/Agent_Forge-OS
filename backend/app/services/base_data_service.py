@@ -6,5 +6,5 @@ class BaseDataService:
         return CurrentUserService.get_user_id()
 
     @staticmethod
-    def current_user():
-        return CurrentUserService.get_user()
+    def get_user_id():
+        return CurrentUserService.get_user_id()
