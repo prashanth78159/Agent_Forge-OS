@@ -1,9 +1,10 @@
-
 from app.config.database import db
 
 from app.services.notification_service import (
     NotificationService
 )
+
+from app.services.base_data_service import BaseDataService
 
 from datetime import (
     datetime,
@@ -93,7 +94,10 @@ class ApprovalService:
                         approver_group,
 
                     "due_at":
-                        due_at.isoformat()
+                        due_at.isoformat(),
+
+                    "user_id":
+                        BaseDataService.current_user_id()
                 }
             )
             .execute()

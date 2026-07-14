@@ -1,5 +1,5 @@
-
 from app.config.database import db
+from app.services.current_user_service import CurrentUserService
 
 
 class WorkflowResumeService:
@@ -45,7 +45,10 @@ class WorkflowResumeService:
                         approval_node,
 
                     "status":
-                        "WAITING"
+                        "WAITING",
+
+                    "user_id":
+                        CurrentUserService.get_user_id()
                 }
             )
             .execute()

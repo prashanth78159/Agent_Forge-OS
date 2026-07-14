@@ -1,6 +1,5 @@
-
 from app.config.database import db
-
+from app.services.base_data_service import BaseDataService
 from app.services.notification_service import (
     NotificationService
 )
@@ -23,6 +22,8 @@ class ErrorService:
 
         )
 
+        user_id = BaseDataService.current_user_id()
+
         return (
             db.client
             .table(
@@ -37,7 +38,10 @@ class ErrorService:
                         node_id,
 
                     "error_message":
-                        str(error_message)
+                        str(error_message),
+
+                    "user_id":
+                        user_id
                 }
             )
             .execute()
@@ -51,7 +55,7 @@ class ErrorService:
             .table(
                 "workflow_errors"
             )
-            .select("*")
+            .select("* ")
             .order(
                 "created_at",
                 desc=True

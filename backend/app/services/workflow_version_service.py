@@ -1,5 +1,5 @@
-
 from app.config.database import db
+from app.services.current_user_service import CurrentUserService
 
 
 class WorkflowVersionService:
@@ -14,7 +14,7 @@ class WorkflowVersionService:
             .table(
                 "workflow_versions"
             )
-            .select("*")
+            .select("* ")
             .eq(
                 "workflow_id",
                 workflow_id
@@ -43,6 +43,7 @@ class WorkflowVersionService:
         version_number,
         workflow_json
     ):
+        user_id = CurrentUserService.get_user_id()
 
         return (
             db.client
@@ -58,7 +59,10 @@ class WorkflowVersionService:
                         version_number,
 
                     "workflow_json":
-                        workflow_json
+                        workflow_json,
+
+                    "user_id":
+                        user_id
                 }
             )
             .execute()
@@ -96,7 +100,7 @@ class WorkflowVersionService:
             .table(
                 "workflow_versions"
             )
-            .select("*")
+            .select("* ")
             .eq(
                 "workflow_id",
                 workflow_id

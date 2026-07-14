@@ -1,5 +1,5 @@
-
 from app.config.database import db
+from app.services.current_user_service import CurrentUserService
 
 
 class TemplateService:
@@ -10,7 +10,7 @@ class TemplateService:
         description,
         workflow_json
     ):
-
+        user_id = CurrentUserService.get_user_id()
         return (
             db.client
             .table("workflow_templates")
@@ -18,7 +18,8 @@ class TemplateService:
                 {
                     "name": name,
                     "description": description,
-                    "workflow_json": workflow_json
+                    "workflow_json": workflow_json,
+                    "user_id": user_id
                 }
             )
             .execute()

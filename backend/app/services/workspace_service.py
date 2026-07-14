@@ -1,6 +1,4 @@
-
 from app.config.database import db
-
 from app.services.current_user_service import (
     CurrentUserService
 )
@@ -12,6 +10,7 @@ class WorkspaceService:
     def create_workspace(
         name
     ):
+        user_id = CurrentUserService.get_user_id()
 
         result = (
             db.client
@@ -21,9 +20,8 @@ class WorkspaceService:
             .insert(
                 {
                     "name": name,
-                    "owner_id":
-                        CurrentUserService
-                        .get_user_id()
+                    "owner_id": user_id,
+                    "user_id": user_id
                 }
             )
             .execute()
@@ -39,8 +37,7 @@ class WorkspaceService:
                     workspace["id"],
 
                 "user_id":
-                    CurrentUserService
-                    .get_user_id(),
+                    user_id,
 
                 "role":
                     "OWNER"
@@ -62,7 +59,7 @@ class WorkspaceService:
             .table(
                 "workspace_members"
             )
-            .select("*")
+            .select("* ")
             .eq(
                 "user_id",
                 user_id
@@ -87,7 +84,7 @@ class WorkspaceService:
             .table(
                 "workspaces"
             )
-            .select("*")
+            .select("* ")
             .in_(
                 "id",
                 workspace_ids

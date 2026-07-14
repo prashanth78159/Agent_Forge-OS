@@ -1,5 +1,5 @@
-
 from app.config.database import db
+from app.services.base_data_service import BaseDataService
 
 
 class ScheduleService:
@@ -24,7 +24,10 @@ class ScheduleService:
                         cron_expression,
 
                     "enabled":
-                        True
+                        True,
+
+                    "user_id":
+                        BaseDataService.current_user_id()
                 }
             )
             .execute()

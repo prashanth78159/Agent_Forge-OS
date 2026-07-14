@@ -1,5 +1,5 @@
-
 from app.config.database import db
+from app.services.base_data_service import BaseDataService
 
 
 class WorkflowStatusService:
@@ -33,7 +33,7 @@ class WorkflowStatusService:
         node_name,
         status
     ):
-
+        user_id = BaseDataService.current_user_id()
         return (
             db.client
             .table(
@@ -48,7 +48,10 @@ class WorkflowStatusService:
                         node_name,
 
                     "status":
-                        status
+                        status,
+
+                    "user_id":
+                        user_id
                 }
             )
             .execute()

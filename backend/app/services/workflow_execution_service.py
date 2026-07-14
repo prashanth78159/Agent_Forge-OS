@@ -1,88 +1,45 @@
-
 from app.config.database import db
-
-from app.services.current_user_service import (
-    CurrentUserService
-)
-
+from app.services.base_data_service import BaseDataService
 
 class WorkflowExecutionService:
 
     @staticmethod
-    def save_execution(
-        execution_id,
-        workflow_id,
-        status
-    ):
-
+    def save_execution(execution_id, workflow_id, status):
+        user_id = BaseDataService.current_user_id()
         return (
             db.client
-            .table(
-                "workflow_executions"
-            )
-            .insert(
-                {
-                    "id":
-                        execution_id,
-
-                    "workflow_id":
-                        workflow_id,
-
-                    "status":
-                        status,
-
-                    "user_id":
-                        CurrentUserService
-                        .get_user_id()
-                }
-            )
+            .table("workflow_executions")
+            .insert({
+                "id": execution_id,
+                "workflow_id": workflow_id,
+                "status": status,
+                "user_id": user_id
+            })
             .execute()
         )
 
     @staticmethod
-    def save_output(
-        execution_id,
-        node_id,
-        output
-    ):
-
+    def save_output(workflow_execution_id, node_id, output_data):
+        user_id = BaseDataService.current_user_id()
         return (
             db.client
-            .table(
-                "workflow_node_outputs"
-            )
-            .insert(
-                {
-                    "workflow_execution_id":
-                        execution_id,
-
-                    "node_id":
-                        node_id,
-
-                    "output_data":
-                        str(output)
-                }
-            )
+            .table("workflow_node_outputs")
+            .insert({
+                "workflow_execution_id": workflow_execution_id,
+                "node_id": node_id,
+                "output_data": output_data,
+                "user_id": user_id
+            })
             .execute()
         )
 
     @staticmethod
-    def get_executions():
-
+    def get_execution(execution_id):
         return (
             db.client
-            .table(
-                "workflow_executions"
-            )
+            .table("workflow_executions")
             .select("*")
-            .eq(
-                "user_id",
-                CurrentUserService
-                .get_user_id()
-            )
-            .order(
-                "created_at",
-                desc=True
-            )
+            .eq("id", execution_id)
+            .single()
             .execute()
         )

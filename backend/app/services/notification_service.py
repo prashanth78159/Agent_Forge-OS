@@ -1,9 +1,7 @@
 
 from app.config.database import db
 
-from app.services.current_user_service import (
-    CurrentUserService
-)
+from app.services.base_data_service import BaseDataService
 
 
 class NotificationService:
@@ -46,7 +44,7 @@ class NotificationService:
             .select("*")
             .eq(
                 "user_id",
-                CurrentUserService.get_user_id()
+                BaseDataService.current_user_id()
             )
             .order(
                 "created_at",
