@@ -1,7 +1,5 @@
 from app.config.database import db
-from app.services.current_user_service import (
-    BaseDataService
-)
+from app.services.base_data_service import BaseDataService
 
 
 class WorkspaceService:
@@ -59,7 +57,7 @@ class WorkspaceService:
             .table(
                 "workspace_members"
             )
-            .select("* ")
+            .select("*")
             .eq(
                 "user_id",
                 user_id
@@ -84,7 +82,7 @@ class WorkspaceService:
             .table(
                 "workspaces"
             )
-            .select("* ")
+            .select("*")
             .in_(
                 "id",
                 workspace_ids
