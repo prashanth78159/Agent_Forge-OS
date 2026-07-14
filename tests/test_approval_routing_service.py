@@ -1,21 +1,17 @@
 
 import pytest
 from unittest.mock import MagicMock
-import sys
 
-# Mock BaseDataService for RLS compliance
 class MockBaseDataService:
     @staticmethod
     def current_user_id():
         return "test-user-uuid"
 
-# Direct mock class to ensure we capture calls correctly
 class MockApprovalService:
     create_request = MagicMock()
 
 @pytest.fixture(autouse=True)
 def setup_mocks(monkeypatch):
-    # Ensure the target module is imported before patching its attributes
     import app.services.approval_routing_service as target_module
     monkeypatch.setattr(target_module, 'BaseDataService', MockBaseDataService)
     monkeypatch.setattr(target_module, 'ApprovalService', MockApprovalService)
@@ -36,6 +32,4 @@ def test_process_next_level_routing(setup_mocks):
 
     assert not result.get("final_level")
     assert result["next_level"] == 2
-    # Verify the mock was called
     assert MockApprovalService.create_request.called
-    print("\u2705 Approval routing mock assertion verified.")
