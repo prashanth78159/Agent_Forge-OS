@@ -1,6 +1,6 @@
 
 from app.services.current_user_service import (
-    CurrentUserService
+    BaseDataService
 )
 
 class BaseDataService:
@@ -10,6 +10,6 @@ class BaseDataService:
         Retrieves the current authenticated user's ID for RLS compliance.
         """
         return (
-            CurrentUserService
+            BaseDataService
             .get_user_id()
         )

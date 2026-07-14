@@ -1,5 +1,5 @@
 from app.config.database import db
-from app.services.current_user_service import CurrentUserService
+from app.services.base_data_service import BaseDataService
 
 
 class WorkflowResumeService:
@@ -48,7 +48,7 @@ class WorkflowResumeService:
                         "WAITING",
 
                     "user_id":
-                        CurrentUserService.get_user_id()
+                        BaseDataService.get_user_id()
                 }
             )
             .execute()

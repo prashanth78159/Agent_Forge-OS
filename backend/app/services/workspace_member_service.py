@@ -1,5 +1,5 @@
 from app.config.database import db
-from app.services.current_user_service import CurrentUserService
+from app.services.base_data_service import BaseDataService
 
 
 class WorkspaceMemberService:

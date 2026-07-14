@@ -2,7 +2,7 @@
 from app.config.database import db
 
 from app.services.current_user_service import (
-    CurrentUserService
+    BaseDataService
 )
 
 from app.services.workflow_version_service import (
@@ -95,7 +95,7 @@ class WorkflowService:
                     "name": name,
                     "workflow_json": workflow_json,
                     "user_id":
-                        CurrentUserService
+                        BaseDataService
                         .get_user_id()
                 }
             )
@@ -132,7 +132,7 @@ class WorkflowService:
     def get_workflows():
 
         user_id = (
-            CurrentUserService
+            BaseDataService
             .get_user_id()
         )
 

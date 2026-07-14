@@ -1,6 +1,6 @@
 from app.config.database import db
 from app.services.current_user_service import (
-    CurrentUserService
+    BaseDataService
 )
 
 
@@ -10,7 +10,7 @@ class WorkspaceService:
     def create_workspace(
         name
     ):
-        user_id = CurrentUserService.get_user_id()
+        user_id = BaseDataService.get_user_id()
 
         result = (
             db.client
@@ -50,7 +50,7 @@ class WorkspaceService:
     def get_workspaces():
 
         user_id = (
-            CurrentUserService
+            BaseDataService
             .get_user_id()
         )
 

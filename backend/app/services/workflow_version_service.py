@@ -1,5 +1,5 @@
 from app.config.database import db
-from app.services.current_user_service import CurrentUserService
+from app.services.base_data_service import BaseDataService
 
 
 class WorkflowVersionService:
@@ -43,7 +43,7 @@ class WorkflowVersionService:
         version_number,
         workflow_json
     ):
-        user_id = CurrentUserService.get_user_id()
+        user_id = BaseDataService.get_user_id()
 
         return (
             db.client

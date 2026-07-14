@@ -2,7 +2,7 @@
 from app.config.database import db
 
 from app.services.current_user_service import (
-    CurrentUserService
+    BaseDataService
 )
 
 
@@ -22,7 +22,7 @@ class APIVaultService:
             .upsert(
                 {
                     "user_id":
-                        CurrentUserService
+                        BaseDataService
                         .get_user_id(),
 
                     "provider":
@@ -50,7 +50,7 @@ class APIVaultService:
 
             .eq(
                 "user_id",
-                CurrentUserService
+                BaseDataService
                 .get_user_id()
             )
 

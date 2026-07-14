@@ -20,7 +20,7 @@ class NotificationService:
             .insert(
                 {
                     "user_id":
-                        CurrentUserService
+                        BaseDataService
                         .get_user_id(),
 
                     "title":
