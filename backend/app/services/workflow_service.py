@@ -1,9 +1,7 @@
 
 from app.config.database import db
 
-from app.services.current_user_service import (
-    BaseDataService
-)
+from app.services.base_data_service import BaseDataService
 
 from app.services.workflow_version_service import (
     WorkflowVersionService

@@ -5,7 +5,7 @@ from app.services.api_vault_service import (
     APIVaultService
 )
 from app.services.current_user_service import (
-    CurrentUserService
+    BaseDataService
 )
 
 
@@ -16,7 +16,7 @@ def render():
     )
 
     # Display current user info
-    current_user = CurrentUserService.get_user()
+    current_user = BaseDataService.get_user()
     if current_user:
         st.info(f"Currently logged in as: {current_user.get('email', 'N/A')}")
     else:
