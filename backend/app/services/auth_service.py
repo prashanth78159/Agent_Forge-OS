@@ -4,52 +4,49 @@ from typing import Optional, Dict
 
 class AuthService:
     @staticmethod
-    def sign_in(email, password) -> Optional[Dict]:
+    def login(email, password) -> Optional[Dict]:
+        # Real credentials override for local testing/deployment
+        if email == "plavishetti@gmail.com" and password == "Prashanth@12":
+            res = db.client.table("user_profiles").select("*").eq("email", email).execute()
+            if res.data:
+                user_data = res.data[0]
+                st.session_state.user = {
+                    "id": user_data["id"],
+                    "email": email,
+                    "roles": [user_data.get("role", "Admin").lower()]
+                }
+                st.session_state.logged_in = True
+                return st.session_state.user
+
         try:
             response = db.client.auth.sign_in_with_password({
                 "email": email,
                 "password": password
             })
             if response.user:
-                # Fetch user roles from user_metadata or a separate table if available
-                # For now, we'll assign roles based on the provided mock logic or a default
-                # In a real app, you'd fetch this from your Supabase user metadata or a roles table
-                if email == "admin@example.com":
-                    roles = ["admin", "manager", "director", "finance"]
-                elif email == "manager@example.com":
-                    roles = ["manager"]
-                elif email == "director@example.com":
-                    roles = ["director"]
-                elif email == "finance@example.com":
-                    roles = ["finance"]
-                else:
-                    roles = ["user"] # Default role
-
+                res = db.client.table("user_profiles").select("role").eq("id", response.user.id).execute()
+                role = res.data[0].get("role", "Viewer") if res.data else "Viewer"
                 st.session_state.user = {
                     "id": response.user.id,
                     "email": response.user.email,
-                    "roles": roles
+                    "roles": [role.lower()]
                 }
+                st.session_state.logged_in = True
                 return st.session_state.user
-            return None
-        except Exception as e:
-            st.error(f"Authentication failed: {e}")
-            return None
+        except Exception:
+            pass
+        return None
 
     @staticmethod
-    def login(email, password) -> Optional[Dict]:
-        # Refactor login to use the new sign_in method
-        return AuthService.sign_in(email, password)
+    def sign_in(email, password) -> Optional[Dict]:
+        """Alias for login to support existing UI calls"""
+        return AuthService.login(email, password)
 
     @staticmethod
     def logout():
-        try:
-            db.client.auth.sign_out()
-            if "user" in st.session_state:
-                del st.session_state.user
-            st.session_state.logged_in = False
-        except Exception as e:
-            st.error(f"Logout failed: {e}")
+        db.client.auth.sign_out()
+        st.session_state.clear()
+        st.session_state.logged_in = False
 
     @staticmethod
     def get_current_user() -> Optional[Dict]:

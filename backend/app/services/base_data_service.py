@@ -7,4 +7,9 @@ class BaseDataService:
 
     @staticmethod
     def get_user_id():
+        # Alias for current_user_id to fix AttributeError across the app
         return CurrentUserService.get_user_id()
+
+    @staticmethod
+    def get_user():
+        return CurrentUserService.get_user()

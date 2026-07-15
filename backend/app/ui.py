@@ -85,6 +85,8 @@ from app.ui_pages.contact import render as contact_page
 
 from app.ui_pages.database_dashboard import render as database_dashboard_page
 from app.ui_pages.test_current_user_service import render as test_current_user_service_page
+from app.ui_pages.approval_audit_dashboard import render as approval_audit_page
+from app.ui_pages.permission_management import render as permission_management_page
 from app.ui_pages.user_management import render as user_management_page
 from app.ui_pages.approval_audit_dashboard import render as approval_audit_dashboard_page
 from app.ui_pages.role_management import render as role_management_page
@@ -146,7 +148,7 @@ NAVIGATION_OPTIONS = {
         "Resume Debug", "Notification Center"
     ],
     "User & System": [
-        "User Management", "Role Management",
+        "User Management", "Role Management", "Permission Management",
         "Profile", "API Vault", "Settings", "Contact"
     ],
     "Test Services": [
@@ -266,6 +268,8 @@ elif menu == "Settings":
     settings_page()
 elif menu == "User Management":
     user_management_page()
+elif menu == "Permission Management":
+    permission_management_page()
 elif menu == "Role Management":
     role_management_page()
 elif menu == "Approval Escalation Dashboard":
