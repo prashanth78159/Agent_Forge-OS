@@ -1,18 +1,28 @@
 
 from supabase import create_client
 
+from app.config.database import (
+    SUPABASE_URL,
+    SUPABASE_KEY
+)
+
 
 class DatabaseService:
 
-    def __init__(
-        self,
-        url,
-        key
-    ):
-        self.client = create_client(
-            url,
-            key
-        )
+    _instance = None
+
+    def __new__(cls):
+
+        if cls._instance is None:
+
+            cls._instance = super().__new__(cls)
+
+            cls._instance.client = create_client(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            )
+
+        return cls._instance
 
     def save_execution(
         self,
@@ -23,25 +33,21 @@ class DatabaseService:
 
         return (
             self.client
-            .table(
-                "workflow_executions"
-            )
+            .table("workflow_executions")
             .upsert(
                 {
-                    "id":
-                        execution_id,
-
-                    "status":
-                        status,
-
-                    "workflow_id":
-                        workflow_id
+                    "id": execution_id,
+                    "status": status,
+                    "workflow_id": workflow_id
                 }
             )
             .execute()
         )
 
-    def get_execution(self, execution_id):
+    def get_execution(
+        self,
+        execution_id
+    ):
 
         return (
             self.client
@@ -51,3 +57,8 @@ class DatabaseService:
             .single()
             .execute()
         )
+
+
+def get_db():
+
+    return DatabaseService()

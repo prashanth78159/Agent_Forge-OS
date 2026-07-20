@@ -1,17 +1,6 @@
 
 import os
 
-from app.services.database_service import (
-    DatabaseService
-)
+SUPABASE_URL = os.getenv("SUPABASE_URL")
 
-db = DatabaseService(
-
-    os.environ[
-        "SUPABASE_URL"
-    ],
-
-    os.environ[
-        "SUPABASE_KEY"
-    ]
-)
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")

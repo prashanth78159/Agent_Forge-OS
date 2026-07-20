@@ -2,47 +2,37 @@
 from app.services.database_service import get_db
 
 
-class AgentService:
+class AgentExecutionService:
 
     def __init__(self):
 
         self.db = get_db()
 
-    def create_agent(
+    def save_execution(
         self,
         payload
     ):
 
         return (
             self.db.client
-            .table("agent_templates")
+            .table("agent_executions")
             .insert(payload)
             .execute()
         )
 
-    def list_agents(
+    def get_executions(
         self,
         user_id
     ):
 
         return (
             self.db.client
-            .table("agent_templates")
+            .table("agent_executions")
             .select("*")
             .eq("user_id", user_id)
-            .execute()
-        )
-
-    def get_agent(
-        self,
-        agent_id
-    ):
-
-        return (
-            self.db.client
-            .table("agent_templates")
-            .select("*")
-            .eq("id", agent_id)
-            .single()
+            .order(
+                "created_at",
+                desc=True
+            )
             .execute()
         )

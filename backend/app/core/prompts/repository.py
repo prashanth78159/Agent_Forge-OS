@@ -1,25 +1,45 @@
 
-from typing import Dict, List
+from app.services.database_service import get_db
 
 
 class PromptRepository:
 
-    def __init__(self, supabase):
-        self.supabase = supabase
+    def __init__(self):
 
-    def create(self, payload: Dict):
+        self.db = get_db()
+
+    def create(
+        self,
+        payload
+    ):
 
         return (
-            self.supabase
+            self.db.client
             .table("prompt_templates")
             .insert(payload)
             .execute()
         )
 
-    def get_by_id(self, prompt_id: str):
+    def list_by_user(
+        self,
+        user_id
+    ):
 
         return (
-            self.supabase
+            self.db.client
+            .table("prompt_templates")
+            .select("*")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+    def get_by_id(
+        self,
+        prompt_id
+    ):
+
+        return (
+            self.db.client
             .table("prompt_templates")
             .select("*")
             .eq("id", prompt_id)
@@ -27,34 +47,27 @@ class PromptRepository:
             .execute()
         )
 
-    def get_by_user(self, user_id: str):
-
-        return (
-            self.supabase
-            .table("prompt_templates")
-            .select("*")
-            .eq("user_id", user_id)
-            .execute()
-        )
-
     def update(
         self,
-        prompt_id: str,
-        payload: Dict
+        prompt_id,
+        payload
     ):
 
         return (
-            self.supabase
+            self.db.client
             .table("prompt_templates")
             .update(payload)
             .eq("id", prompt_id)
             .execute()
         )
 
-    def delete(self, prompt_id: str):
+    def delete(
+        self,
+        prompt_id
+    ):
 
         return (
-            self.supabase
+            self.db.client
             .table("prompt_templates")
             .delete()
             .eq("id", prompt_id)

@@ -2,47 +2,50 @@
 from app.services.database_service import get_db
 
 
-class AgentService:
+class MemoryService:
 
     def __init__(self):
 
         self.db = get_db()
 
-    def create_agent(
+    def store_memory(
         self,
         payload
     ):
 
         return (
             self.db.client
-            .table("agent_templates")
+            .table("agent_memory")
             .insert(payload)
             .execute()
         )
 
-    def list_agents(
-        self,
-        user_id
-    ):
-
-        return (
-            self.db.client
-            .table("agent_templates")
-            .select("*")
-            .eq("user_id", user_id)
-            .execute()
-        )
-
-    def get_agent(
+    def get_agent_memory(
         self,
         agent_id
     ):
 
         return (
             self.db.client
-            .table("agent_templates")
+            .table("agent_memory")
             .select("*")
-            .eq("id", agent_id)
-            .single()
+            .eq("agent_id", agent_id)
+            .order(
+                "importance_score",
+                desc=True
+            )
+            .execute()
+        )
+
+    def delete_memory(
+        self,
+        memory_id
+    ):
+
+        return (
+            self.db.client
+            .table("agent_memory")
+            .delete()
+            .eq("id", memory_id)
             .execute()
         )

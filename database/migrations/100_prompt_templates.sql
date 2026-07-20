@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS prompt_templates (
 
     user_id UUID NOT NULL,
 
-    name VARCHAR(250) NOT NULL,
+    name VARCHAR(255) NOT NULL,
 
     description TEXT,
 
